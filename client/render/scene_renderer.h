@@ -188,6 +188,7 @@ class scene_renderer
 		glm::vec4 light_position;
 		glm::vec4 ambient_color;
 		glm::vec4 light_color;
+		bool use_greyscale;
 	};
 
 	struct instance_gpu_data
@@ -276,7 +277,8 @@ public:
 	        vk::Image color_buffer,
 	        vk::Image depth_buffer,
 	        std::span<frame_info> info,
-	        bool render_debug_draws = false);
+	        bool render_debug_draws = false,
+	        bool use_greyscale = false);
 	void end_frame();
 
 	void debug_draw_clear();

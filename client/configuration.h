@@ -127,4 +127,7 @@ public:
 	{
 		return max_bitrate(extended_config);
 	}
+	bool test_greyscale_shader = false;
+	int greyscale_start_time = 0;
+	int greyscale_end_time = 0;
 };

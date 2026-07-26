@@ -52,10 +52,13 @@ public:
 	static const size_t image_buffer_size = 3;
 
 	app_launcher apps;
+	int greyscale_paused_until = -1;
 
 private:
 	static const size_t view_count = 2;
 	static const size_t decoder_count = view_count + 1;
+
+	bool should_use_greyscale(bool test_greyscale_shader, int start, int end, int & paused_until);
 
 	struct accumulator_images
 	{

@@ -989,11 +989,18 @@ void scenes::stream::render(const XrFrameState & frame_state)
 		const float scale = std::lerp(1, constants::stream::dimming_scale, x);
 		const float bias = std::lerp(0, constants::stream::dimming_bias, x);
 
+		bool use_greyscale = should_use_greyscale(
+		        application::get_config().test_greyscale_shader,
+		        application::get_config().greyscale_start_time,
+		        application::get_config().greyscale_end_time,
+		        greyscale_paused_until);
+
 		defoveator->defoveate(command_buffer,
 		                      foveation,
 		                      images,
 		                      {scale, scale, scale, 1.},
 		                      {bias, bias, bias, 0.},
+		                      use_greyscale,
 		                      image_index);
 
 		command_buffer.writeTimestamp(vk::PipelineStageFlagBits::eBottomOfPipe, *query_pool, 1);
@@ -1367,4 +1374,38 @@ bool scenes::stream::on_input_button_up(uint8_t button)
 bool scenes::stream::on_input_scroll(float h, float v)
 {
 	return forward_hid_input(from_headset::hid::mouse_scroll{h, v});
+}
+
+bool scenes::stream::should_use_greyscale(bool test_greyscale_shader, int start, int end, int & paused_until)
+{
+	if (test_greyscale_shader)
+		return true;
+
+	std::time_t now_c = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	std::tm now_tm;
+	localtime_r(&now_c, &now_tm);
+	int time = now_tm.tm_hour * 60 + now_tm.tm_min;
+
+	bool is_night_time = false;
+
+	if (start < end)
+	{
+		is_night_time = time >= start && time < end;
+	}
+	if (start > end)
+	{
+		is_night_time = time >= start || time < end;
+	}
+
+	if (paused_until >= 0)
+	{
+		int time_remaining = (paused_until - time + 1440) % 1440;
+		if (time_remaining > 30)
+		{
+			paused_until = -1;
+		}
+		return false;
+	}
+
+	return is_night_time;
 }

@@ -18,12 +18,22 @@
  */
 #version 450
 
+// Greyscale conversion function
+// Converts RGB to greyscale using luminance preservation
+vec3 rgb_to_greyscale(vec3 color)
+{
+    // Standard luminance weights (rec. 601)
+    float luminance = dot(color.rgb, vec3(0.299, 0.587, 0.114));
+    return vec3(luminance, luminance, luminance);
+}
+
 layout(push_constant) uniform pc
 {
 	ivec4 rgb_rect;
 	ivec4 a_rect;
 	vec4 scale;
 	vec4 bias;
+	int use_greyscale;
 };
 
 #ifdef VERT_SHADER
@@ -86,6 +96,11 @@ void main()
 	if (do_srgb)
 	{
 		outColor = sRGB_to_linear_rgba(outColor);
+	}
+
+	if (use_greyscale != 0)
+	{
+		outColor.rgb = rgb_to_greyscale(outColor.rgb);
 	}
 
 	if (alpha == 0)

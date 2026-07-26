@@ -174,6 +174,12 @@ configuration::configuration(xr::system & system, xr::session & session)
 		if (auto val = root["openxr_post_processing"]; val.is_object())
 			parse_openxr_post_processing_options(val.get_object());
 
+		if (auto val = root["greyscale_start"]; val.is_number())
+			greyscale_start_time = val.get_int64();
+
+		if (auto val = root["greyscale_end"]; val.is_number())
+			greyscale_end_time = val.get_int64();
+
 		if (auto val = root["passthrough_enabled"]; val.is_bool())
 			passthrough_enabled = val.get_bool();
 
@@ -302,6 +308,8 @@ void configuration::save()
 	for (auto & [key, value]: features)
 		json << "," << key << ":" << std::boolalpha << value;
 	json << ",\"virtual_keyboard_layout\":" << json_string(virtual_keyboard_layout);
+	json << ",\"greyscale_start\":" << greyscale_start_time;
+	json << ",\"greyscale_end\":" << greyscale_end_time;
 	json << ",\"override_foveation_enable\":" << std::boolalpha << override_foveation_enable;
 	json << ",\"override_foveation_pitch\":" << override_foveation_pitch;
 	json << ",\"override_foveation_distance\":" << override_foveation_distance;

@@ -132,6 +132,32 @@ static std::string openxr_post_processing_flag_name(XrCompositionLayerSettingsFl
 	}
 }
 
+bool TimeInput(const char * label, int & minutes)
+{
+	int hour = minutes / 60;
+	int min = minutes % 60;
+
+	bool changed = false;
+
+	ImGui::PushID(label);
+	ImGui::TextUnformatted(label);
+	ImGui::SameLine();
+
+	ImGui::SetNextItemWidth(300);
+	changed |= ImGui::SliderInt("##hour", &hour, 0, 23, "%02d", ImGuiSliderFlags_AlwaysClamp);
+	ImGui::SameLine();
+	ImGui::Text(":");
+	ImGui::SameLine();
+	ImGui::SetNextItemWidth(300);
+	changed |= ImGui::SliderInt("##min", &min, 0, 59, "%02d", ImGuiSliderFlags_AlwaysClamp);
+	ImGui::PopID();
+
+	if (changed)
+		minutes = hour * 60 + min;
+
+	return changed;
+}
+
 bool post_processing(
         imgui_context & imgui_ctx,
         configuration & config)
@@ -193,6 +219,37 @@ bool post_processing(
 		imgui_ctx.vibrate_on_hover();
 		if (ImGui::IsItemHovered())
 			imgui_ctx.tooltip(_("Improve clarity of high contrast edges and counteract blur.\nUseful when the input resolution is low compared to the headset display"));
+	}
+
+	if (ImGui::Checkbox(_S("Test greyscale shader"), &config.test_greyscale_shader))
+	{
+		config.save();
+		changed = true;
+	}
+	imgui_ctx.vibrate_on_hover();
+	if (ImGui::IsItemHovered())
+		imgui_ctx.tooltip(_("Enable greyscale night mode shader"));
+
+	if (TimeInput(_S("Start Time"), config.greyscale_start_time))
+	{
+		config.save();
+		changed = true;
+	}
+	imgui_ctx.vibrate_on_hover();
+	if (ImGui::IsItemHovered())
+	{
+		imgui_ctx.tooltip(_("Time at which the greyscale night mode will automatically be enabled."));
+	}
+
+	if (TimeInput(_S("End Time"), config.greyscale_end_time))
+	{
+		config.save();
+		changed = true;
+	}
+	imgui_ctx.vibrate_on_hover();
+	if (ImGui::IsItemHovered())
+	{
+		imgui_ctx.tooltip(_("Time at which the greyscale night mode will automatically be disabled."));
 	}
 
 	ImGui::Unindent();

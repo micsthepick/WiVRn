@@ -865,7 +865,8 @@ void scene_renderer::render(
         vk::Image color_buffer,
         vk::Image depth_buffer,
         std::span<frame_info> frames,
-        bool render_debug_draws)
+        bool render_debug_draws,
+        bool use_greyscale)
 {
 	assert(frames.size() <= instance_gpu_data{}.modelview.size());
 

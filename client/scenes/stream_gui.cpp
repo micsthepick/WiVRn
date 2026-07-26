@@ -929,6 +929,18 @@ void scenes::stream::draw_gui(XrTime predicted_display_time, XrDuration predicte
 			imgui_ctx->vibrate_on_hover();
 
 			bool dummy = false;
+			if (RadioButtonWithoutCheckBox(ICON_FA_MOON "  " + _("Pause greyscale for 30 minutes"), dummy, true, {tab_width, 0}))
+			{
+				// Calculate current time in minutes since midnight
+				auto now = std::chrono::system_clock::now();
+				std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+				std::tm now_tm;
+				localtime_r(&now_c, &now_tm);
+				int current_time = now_tm.tm_hour * 60 + now_tm.tm_min;
+				greyscale_paused_until = current_time + 30;
+			}
+			imgui_ctx->vibrate_on_hover();
+
 			if (RadioButtonWithoutCheckBox(ICON_FA_DOOR_OPEN "  " + _("Disconnect"), dummy, true, {tab_width, 0}))
 				exit();
 			imgui_ctx->vibrate_on_hover();

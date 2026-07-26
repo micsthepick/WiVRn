@@ -25,6 +25,7 @@
 #include "vk/shader.h"
 #include "vk/specialization_constants.h"
 #include <array>
+#include <glm/ext/scalar_int_sized.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <vk_mem_alloc.h>
@@ -45,6 +46,7 @@ struct vert_pc
 	glm::ivec4 a_rect;
 	std::array<float, 4> scale;
 	std::array<float, 4> bias;
+	glm::int32 use_greyscale;
 };
 
 void stream_defoveator::ensure_vertices(size_t num_vertices)
@@ -308,6 +310,7 @@ void stream_defoveator::defoveate(vk::raii::CommandBuffer & command_buffer,
                                   const std::array<input, 2> & inputs,
                                   std::array<float, 4> scale,
                                   std::array<float, 4> bias,
+                                  bool greyscale_enabled,
                                   int destination)
 {
 	if (destination < 0 || destination >= (int)output_images.size())
@@ -430,6 +433,7 @@ void stream_defoveator::defoveate(vk::raii::CommandBuffer & command_buffer,
 		                             input.rect_a.extent.height),
 		        .scale = scale,
 		        .bias = bias,
+		        .use_greyscale = greyscale_enabled ? 1 : 0,
 		};
 
 		device.updateDescriptorSets(descriptor_writes, {});
