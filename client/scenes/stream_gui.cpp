@@ -916,7 +916,7 @@ void scenes::stream::draw_gui(XrTime predicted_display_time, XrDuration predicte
 			RadioButtonWithoutCheckBox(ICON_FA_COMPUTER "  " + _("Stats"), target, stream_tab::stats, {tab_width, 0});
 			imgui_ctx->vibrate_on_hover();
 
-			int n_items_at_end = 4;
+			int n_items_at_end = 5;
 			ImGui::SetCursorPosY(ImGui::GetContentRegionMax().y - n_items_at_end * ImGui::GetCurrentContext()->FontSize - (n_items_at_end * 2) * style.FramePadding.y - (n_items_at_end - 1) * style.ItemSpacing.y - style.WindowPadding.y);
 
 			RadioButtonWithoutCheckBox(ICON_FA_CHART_LINE "  " + _("Statistics overlay"), target, stream_tab::overlay_only, {tab_width, 0});
